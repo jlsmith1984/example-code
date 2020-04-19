@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: myexample-code
+
+server:
+  servlet:
+    context-path: /${spring.application.name}

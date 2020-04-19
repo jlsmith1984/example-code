@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="5">
+    <Properties>
+        <Property name="APP_NAME">MYEXAMPLE-CODE</Property>
+    </Properties>
+    <!-- This filter is used to generally enable TRACE logging if "x-debug-enabled" in the ThreadContext has the value "true" -->
+    <DynamicThresholdFilter key="x-debug-enabled" onMatch="ACCEPT" onMismatch="NEUTRAL">
+        <KeyValuePair key="true" value="DEBUG"/>
+    </DynamicThresholdFilter>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} [%X] [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <AsyncLogger name="com.myexample.code" level="TRACE" additivity="false">
+            <AppenderRef ref="Console"/>
+        </AsyncLogger>
+        <AsyncRoot level="INFO">
+            <AppenderRef ref="Console"/>
+        </AsyncRoot>
+    </Loggers>
+</Configuration>
