@@ -13,16 +13,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>myexamplecode</name>
 	<description>Example Code Excercise</description>
-	<scm>
-		<url>https://github.com/js-foresee/example-code</url>
-		<connection>
-			scm:git:https://github.com/js-foresee/example-code
-		</connection>
-		<developerConnection>
-			scm:git:https://github.com/js-foresee/example-code
-		</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
 
 	<modules>
 		<module>SERVER</module>
