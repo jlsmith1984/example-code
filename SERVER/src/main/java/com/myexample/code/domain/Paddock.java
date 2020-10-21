@@ -28,6 +28,33 @@ public class Paddock {
         }
     }
 
+    /**
+     * Add a racehorse to the paddock's racehorses. Track calculates its odds of winning
+     * @param name - name of added race horse
+     */
+    public void addRaceHorse(String name) {
+        int min = 2;
+        int max = 19;
+        String odds = Integer.toString(new Random().nextInt(((max - min) + 1) + min));
+        String[][] addedRaceHorses = new String[raceHorses.length + 1][2];
+        System.arraycopy(raceHorses,0, addedRaceHorses, 0, raceHorses.length);
+        addedRaceHorses[raceHorses.length][0] = name;
+        addedRaceHorses[raceHorses.length][1] = odds;
+        this.raceHorses = addedRaceHorses;
+        setRaceHorsesCount(raceHorses.length);
+    }
+
+    public void deleteRaceHorse(int raceHorseNumber) {
+        if (0 > raceHorseNumber || raceHorseNumber > raceHorses.length) {
+            System.out.println("Invalid Horse Number: " + raceHorseNumber);
+            return;
+        }
+        String[][] deletedRaceHorses = new String[raceHorses.length - 1][2];
+        System.arraycopy(raceHorses,0, deletedRaceHorses, 0, raceHorseNumber -1);
+        System.arraycopy(raceHorses,raceHorseNumber, deletedRaceHorses, raceHorseNumber - 1, deletedRaceHorses.length - (raceHorseNumber -1));
+        this.raceHorses = deletedRaceHorses;
+    }
+
     public Paddock() {
         this.raceHorses = initRaceHorses();
         this.raceHorsesCount = this.raceHorses.length;

@@ -34,6 +34,12 @@ public class HorseTrackTellerMachineService {
                         setNewWinningHorseNumber(paddock.getRaceHorsesCount(), paddock.getCurrentWinningHorseNumber(), input));
                     break;
                 }
+                case "ar": {
+                    paddock.addRaceHorse(input);
+                }
+                case "dr": {
+                    deleteRaceHorse(paddock, input);
+                }
                 case "q": {
                     break;
                 }

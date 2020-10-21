@@ -92,4 +92,10 @@ public class HorseTrackTellerMachineUtils {
         }
         return truthValue;
     }
+
+    public static void deleteRaceHorse(Paddock paddock, String horseNumber) {
+        if (isValidHorseNumber(paddock.getRaceHorsesCount(), horseNumber)) {
+            paddock.deleteRaceHorse(Integer.parseInt(horseNumber));
+        }
+    }
 }

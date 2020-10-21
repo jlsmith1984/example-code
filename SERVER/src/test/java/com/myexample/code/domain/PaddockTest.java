@@ -1,6 +1,7 @@
 package com.myexample.code.domain;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,5 +49,37 @@ public class PaddockTest {
     public void testInitRaceHorses_WhenNewInstanceOfPaddock_TheWinningHorseNameEqualsTestWinningHorseName() {
         String winningRaceHorseName = paddock.getCurrentWinningHorseName();
         assertEquals(testWinningHorseName, winningRaceHorseName);
+    }
+
+    @Test
+    public void testAddRacehorse() {
+        int newLength = paddock.getRaceHorsesCount() + 1;
+        paddock.addRaceHorse("Seabiscuit");
+        assertEquals(newLength, paddock.getRaceHorses().length);
+        assertEquals("Seabiscuit", paddock.getRaceHorses()[newLength - 1][0]);
+        System.out.println("New Racehorse name: " + paddock.getRaceHorses()[newLength - 1][0] + " odds: " + paddock.getRaceHorses()[newLength - 1][1]);
+        System.out.println("Racehorse Count: " + paddock.getRaceHorsesCount());
+        paddock.showPaddock();
+    }
+
+    @Test
+    public void testDeleteRaceHorse_WhenRaceHorseNumberIsValid_ThenHorseIsDeleted() {
+        int newLength = paddock.getRaceHorsesCount() - 1;
+        System.out.println("Racehorse to delete name: " + paddock.getRaceHorses()[3][0]);
+        paddock.showPaddock();
+        paddock.deleteRaceHorse(4);
+        assertEquals(newLength, paddock.getRaceHorses().length);
+        System.out.println("Racehorse Count: " + paddock.getRaceHorsesCount());
+        paddock.showPaddock();
+    }
+
+    @Test
+    public void testDeleteRaceHorse_WhenRaceHorseNumberIsNotValid_ThenHorseIsNotDeleted() {
+        int newLength = paddock.getRaceHorsesCount() - 1;
+        paddock.showPaddock();
+        paddock.deleteRaceHorse(12);
+        assertNotEquals(newLength, paddock.getRaceHorses().length);
+        System.out.println("Racehorse Count: " + paddock.getRaceHorsesCount());
+        paddock.showPaddock();
     }
 }
