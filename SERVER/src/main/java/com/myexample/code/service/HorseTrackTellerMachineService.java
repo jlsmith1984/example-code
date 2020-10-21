@@ -3,10 +3,6 @@ package com.myexample.code.service;
 import java.util.Scanner;
 
 import static com.myexample.code.utils.HorseTrackTellerMachineUtils.*;
-import static com.myexample.code.utils.HorseTrackTellerMachineUtils.determinePayout;
-import static com.myexample.code.utils.HorseTrackTellerMachineUtils.isValidNewBetCommand;
-import static com.myexample.code.utils.HorseTrackTellerMachineUtils.setNewWinningHorseNumber;
-
 import com.myexample.code.domain.Atm;
 import com.myexample.code.domain.Paddock;
 
@@ -30,15 +26,25 @@ public class HorseTrackTellerMachineService {
                     break;
                 }
                 case "w": {
-                    paddock.setCurrentWinningHorseNumber(
+                    paddock.setCurrentWinningHorseNameAndNumber(
                         setNewWinningHorseNumber(paddock.getRaceHorsesCount(), paddock.getCurrentWinningHorseNumber(), input));
                     break;
                 }
-                case "ar": {
-                    paddock.addRaceHorse(input);
+                case "ca": {
+                    addCurrency(atm, input);
+                    break;
                 }
-                case "dr": {
+                case "cr": {
+                    removeCurrency(atm, input);
+                    break;
+                }
+                case "ha": {
+                    addRaceHorse(paddock, input);
+                    break;
+                }
+                case "hd": {
                     deleteRaceHorse(paddock, input);
+                    break;
                 }
                 case "q": {
                     break;

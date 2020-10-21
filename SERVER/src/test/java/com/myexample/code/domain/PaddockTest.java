@@ -64,10 +64,11 @@ public class PaddockTest {
 
     @Test
     public void testDeleteRaceHorse_WhenRaceHorseNumberIsValid_ThenHorseIsDeleted() {
-        int newLength = paddock.getRaceHorsesCount() - 1;
         System.out.println("Racehorse to delete name: " + paddock.getRaceHorses()[3][0]);
         paddock.showPaddock();
-        paddock.deleteRaceHorse(4);
+        paddock.addRaceHorse("Seabiscuit");
+        int newLength = paddock.getRaceHorsesCount() - 1;
+        paddock.deleteRaceHorse(8);
         assertEquals(newLength, paddock.getRaceHorses().length);
         System.out.println("Racehorse Count: " + paddock.getRaceHorsesCount());
         paddock.showPaddock();

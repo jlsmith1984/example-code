@@ -1,8 +1,7 @@
 package com.myexample.code.domain;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -14,7 +13,6 @@ public class AtmTest {
     int testInventoryTotal;
     int testInventoryTotalAfterPayout;
     int testDebitAmount;
-    int testDebitAmountExpectedHundreds;
     int testBigPayout;
     int testTooBigPayout;
     int testBigPayoutExpectedHundreds;
@@ -26,7 +24,6 @@ public class AtmTest {
         atm = new Atm();
         testInventoryTotal = 1360;
         testDebitAmount = 333;
-        testDebitAmountExpectedHundreds = 3;
         testBigPayout = 1139;
         testTooBigPayout = 3161;
         testBigPayoutExpectedHundreds = 10;
@@ -62,30 +59,28 @@ public class AtmTest {
 
     @Test
     public void testDebitAtm_WhenTestDebitAmount_ThenResultsEqualTestingValues() {
-        int[][] payout = atm.getBillsToDispense(testDebitAmount);
-        assertNotNull(payout);     // payout
-        int numHundreds = payout[payout.length -1][1];
-        assertEquals(testDebitAmountExpectedHundreds, numHundreds);
-        assertEquals(testInventoryTotalAfterPayout, atm.getInventoryTotal());
+        boolean hasPayout = atm.hasCurrencyToDispense(testDebitAmount);
+        assertTrue(hasPayout);     // payout
         System.out.println(String.format("Payout = $%d" , testDebitAmount));
-        atm.debitAtmAndDispenseBills(payout);
+        atm.debitAtmAndDispenseCurrency(testDebitAmount);
+        assertEquals(testInventoryTotalAfterPayout, atm.getInventoryTotal());
     }
 
     @Test
     public void testDebitAtm_WhenTestBigPayout_ThenResultsEqualTestingValues() {
-        int[][] payout = atm.getBillsToDispense(testBigPayout);
-        assertNotNull(payout);     // payout
+        boolean hasPayout = atm.hasCurrencyToDispense(testBigPayout);
+        assertTrue(hasPayout);     // payout
         int numHundreds = atm.getInventory()[atm.getInventory().length -1][1];
+        System.out.println(String.format("Payout = $%d" , testBigPayout));
+        atm.debitAtmAndDispenseCurrency(testBigPayout);
         assertEquals(testBigPayoutExpectedHundreds, numHundreds);
         assertEquals(testInventoryTotalAfterBigPayout, atm.getInventoryTotal());
-        System.out.println(String.format("Payout = $%d" , testBigPayout));
-        atm.debitAtmAndDispenseBills(payout);
     }
 
     @Test
     public void testDebitAtm_WhenTestTooBigPayout_ThenNoPayout() {
-        int[][] nullPayout = atm.getBillsToDispense(testTooBigPayout);
-        assertNull(nullPayout);     // no payout
+        boolean hasPayout = atm.hasCurrencyToDispense(testTooBigPayout);
+        assertFalse(hasPayout);     // no payout
         int numHundreds = atm.getInventory()[atm.getInventory().length -1][1];
         assertEquals(testExpectedHundreds, numHundreds);
         assertEquals(testInventoryTotal, atm.getInventoryTotal());
@@ -93,32 +88,56 @@ public class AtmTest {
     }
 
     @Test
-    public void testDebitAtm_WhenNotEnoughBills_ThenNoPayout() {
+    public void testDebitAtm_WhenNotEnoughCurrency_ThenNoPayout() {
         int testDebit = 195;
-        atm.debitAtmAndDispenseBills(buildTestDebitArray());
+        buildTestDebitArray();
         atm.setInventoryTotal(atm.calculateInventoryTotal());
-        int[][] nullPayout = atm.getBillsToDispense(testDebit);
-        assertNull(nullPayout);     // no payout
+        boolean hasPayout = atm.hasCurrencyToDispense(testDebit);
+        assertFalse(hasPayout);    // no payout
         System.out.println("Insufficient Funds: " + testDebit);
         int numHundreds = atm.getInventory()[atm.getInventory().length -1][1];
+        atm.debitAtmAndDispenseCurrency(testDebit);
         assertEquals(testExpectedHundreds, numHundreds);
-        atm.debitAtmAndDispenseBills(nullPayout);
         atm.showInventory();
     }
 
     // sufficient funds tests - isInsufficientFunds()
     @Test
-    public void testInsufficientFunds_WhenInventoryLessThanBillsToPayout_ThenIsInsufficientFundsIsTrue() {
+    public void testInsufficientFunds_WhenInventoryLessThanCurrencyToPayout_ThenIsInsufficientFundsIsTrue() {
         assertTrue(atm.isInsufficientFunds(testTooBigPayout));
         System.out.println("Insufficient Funds: " + testTooBigPayout);
         atm.showInventory();
     }
 
-    public int[][] buildTestDebitArray() {
-        return new int[][] {{1, 6},
-            {5, 10},
+    @Test
+    public void testAddCash() {
+        int testLength = atm.getInventory().length;
+        atm.addCash(50, 10);
+        assertEquals(testLength + 1, atm.getInventory().length);
+        atm.showInventory();
+    }
+
+    @Test
+    public void testAddCash_InvalidDenomination_ThenCashNotAdded() {
+        int testLength = atm.getInventory().length;
+        atm.addCash(30 ,10);
+        assertEquals(testLength, atm.getInventory().length);
+        atm.showInventory();
+    }
+
+    @Test
+    public void testRemoveCash() {
+        int testLength = atm.getInventory().length;
+        atm.removeCash(20 ,10);
+        assertEquals(testLength - 1, atm.getInventory().length);
+        atm.showInventory();
+    }
+
+    public void buildTestDebitArray() {
+        atm.inventory = new int[][] {{1, 6},
+            {5, 5},
             {10, 0},
             {20, 0},
-            {100, 0}};
+            {100, 10}};
     }
 }

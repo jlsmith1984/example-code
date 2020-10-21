@@ -1,9 +1,9 @@
 package com.myexample.code.utils;
 
+import static com.myexample.code.utils.HorseTrackTellerMachineUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.myexample.code.domain.Atm;
@@ -11,27 +11,24 @@ import com.myexample.code.domain.Paddock;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.myexample.code.utils.HorseTrackTellerMachineUtils.*;
-
 public class HorseTrackTellerMachineUtilsTest {
     Atm atm;
     Paddock paddock;
-    String testWinningHorseNumber = "1";
+    String testWinningHorseNumber;
     String testWager;
     int testWinningPayout;
     int testNumHundreds;
     String testTooBigPayout;
-    String testWinningHorseName;
 
     @Before
     public void init() {
         atm = new Atm();
         paddock = new Paddock();
+        testWinningHorseNumber = "1";
         testWager = "78";
         testWinningPayout = 390;
         testNumHundreds = 7;
         testTooBigPayout = "1456";
-        testWinningHorseName = "That Darn Gray Cat";
     }
 
     // command tests for new bet command - isCommandNewBet()
@@ -100,7 +97,7 @@ public class HorseTrackTellerMachineUtilsTest {
     }
 
     @Test
-    public void testPayout_WhenWagerIstestTooBigPayout_ThenThenNoPayout() {
+    public void testPayout_WhenWagerIsTestTooBigPayout_ThenThenNoPayout() {
         int payout = payout(atm, paddock, testTooBigPayout);
         assertEquals(0, payout);
         int numHundreds = atm.getInventory()[atm.getInventory().length -1][1];
@@ -119,18 +116,18 @@ public class HorseTrackTellerMachineUtilsTest {
 
     @Test
     public void testPayout_WhenNotEnoughChange_ThenNoPayout() {
-        paddock.setCurrentWinningHorseNumber("5");
+        paddock.setCurrentWinningHorseNameAndNumber("5");
         payout(atm, paddock, "3");
         payout(atm, paddock, "3");
         atm.showInventory();
-        int[][] nullPayout = atm.getBillsToDispense(38);
-        assertNull(nullPayout);     // no payout
+        boolean hasPayout = atm.hasCurrencyToDispense(38);
+        assertFalse(hasPayout);     // no payout
         atm.showInventory();
     }
 
     @Test
     public void testCalculatePayout_WhenWagerIsTestWager_ThenPayoutEqualsTestWinningPayout() {
-        int payout = calculatePayout(paddock, Integer.parseInt(paddock.getCurrentWinningHorseNumber()), testWager);
+        int payout = calculatePayout(paddock, testWager);
         assertEquals(testWinningPayout, payout);
         atm.showInventory();
     }
@@ -165,23 +162,27 @@ public class HorseTrackTellerMachineUtilsTest {
     @Test
     public void testSetNewWinningHorseNumber_WhenSelectedRaceHorseIsValid_ThenNewWinningHorseNumberIsUpdated() {
         String currentWinningHorseNumber = paddock.getCurrentWinningHorseNumber();
+        System.out.println(String.format("Current Winning Horse - name: '%s', number: '%s'",
+            paddock.getHorseName(currentWinningHorseNumber), currentWinningHorseNumber));
         String selectedWinningHorseNumber = "4";
         String newWinningHorseNumber = setNewWinningHorseNumber(paddock.getRaceHorsesCount(), currentWinningHorseNumber, selectedWinningHorseNumber);
         assertNotEquals(currentWinningHorseNumber, newWinningHorseNumber);
         assertEquals(selectedWinningHorseNumber, newWinningHorseNumber);
         System.out.println(String.format("New Winning Horse - name: '%s', number: '%s'",
-            paddock.getRaceHorses()[Integer.parseInt(newWinningHorseNumber) - 1][0], newWinningHorseNumber));
+            paddock.getHorseName(newWinningHorseNumber), newWinningHorseNumber));
     }
 
     @Test
     public void testSetNewWinningHorseNumber_WhenSelectedRaceHorseIsNotValid_ThenNewWinningHorseNumberIsNotUpdated() {
         String currentWinningHorseNumber = paddock.getCurrentWinningHorseNumber();
+        System.out.println(String.format("Current Winning Horse - name: '%s', number: '%s'",
+            paddock.getHorseName(currentWinningHorseNumber), currentWinningHorseNumber));
         String selectedWinningHorseNumber = "10";
         String newWinningHorseNumber = setNewWinningHorseNumber(paddock.getRaceHorsesCount(), currentWinningHorseNumber, selectedWinningHorseNumber);
         assertEquals(currentWinningHorseNumber, newWinningHorseNumber);
         assertNotEquals(selectedWinningHorseNumber, newWinningHorseNumber);
         System.out.println(String.format("Unchanged Winning Horse - name: '%s', number: '%s'",
-            paddock.getRaceHorses()[Integer.parseInt(newWinningHorseNumber) - 1][0], newWinningHorseNumber));
+            paddock.getHorseName(newWinningHorseNumber), newWinningHorseNumber));
     }
 
     @Test
@@ -192,7 +193,7 @@ public class HorseTrackTellerMachineUtilsTest {
         assertEquals(currentWinningHorseNumber, newWinningHorseNumber);
         assertNotEquals(selectedWinningHorseNumber, newWinningHorseNumber);
         System.out.println(String.format("Unchanged Winning Horse - name: '%s', number: '%s'",
-            paddock.getRaceHorses()[Integer.parseInt(newWinningHorseNumber) - 1][0], newWinningHorseNumber));
+            paddock.getHorseName(newWinningHorseNumber), newWinningHorseNumber));
     }
 
     // winning bet tests - isWinningBet()
@@ -200,14 +201,14 @@ public class HorseTrackTellerMachineUtilsTest {
     public void testIsWinningBet_WhenSelectedHorseNumberEqualsWinningHorseNumber_ThenIsWinningBet() {
         String selectedHorseNumber = "1";
         assertTrue(isWinningBet(paddock.getCurrentWinningHorseNumber(), selectedHorseNumber));
-        System.out.println(String.format("'%s' is a Winner!", paddock.getRaceHorses()[Integer.parseInt(selectedHorseNumber) - 1][0]));
+        System.out.println(String.format("'%s' is a Winner!", paddock.getHorseName(selectedHorseNumber)));
     }
 
     @Test
     public void testIsWinningBet_WhenSelectedHorseNumberNotEqualWinningHorseNumber_ThenIsNotWinningBet() {
         String selectedHorseNumber = "7";
         assertFalse(isWinningBet(paddock.getCurrentWinningHorseNumber(), selectedHorseNumber));
-        System.out.println(String.format("'%s' is not the Winner!", paddock.getRaceHorses()[Integer.parseInt(selectedHorseNumber) - 1][0]));
+        System.out.println(String.format("'%s' is not the Winner!", paddock.getHorseName(selectedHorseNumber)));
     }
 
     // valid command/input integer - isValidInt()

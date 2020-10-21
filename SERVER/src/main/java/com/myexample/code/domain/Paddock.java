@@ -60,15 +60,11 @@ public class Paddock {
         this.raceHorsesCount = this.raceHorses.length;
         this.currentWinningHorseNumber = "1";
         this.currentWinningHorseName =
-            this.raceHorses[Integer.parseInt(this.currentWinningHorseNumber) - 1][0];
+            this.getHorseName(this.currentWinningHorseNumber);
     }
 
     public String[][] getRaceHorses() {
         return raceHorses;
-    }
-
-    public void setRaceHorses(String[][] raceHorses) {
-        this.raceHorses = raceHorses;
     }
 
     public int getRaceHorsesCount() {
@@ -82,11 +78,20 @@ public class Paddock {
         return currentWinningHorseNumber;
     }
 
-    public void setCurrentWinningHorseNumber(String currentWinningHorseNumber) {
+    public void setCurrentWinningHorseNameAndNumber(String currentWinningHorseNumber) {
         this.currentWinningHorseNumber = currentWinningHorseNumber;
+        this.currentWinningHorseName = getHorseName(currentWinningHorseNumber);
     }
 
     public String getCurrentWinningHorseName() {
         return currentWinningHorseName;
+    }
+
+    public String getHorseName(String horseNumber) {
+        return this.raceHorses[Integer.parseInt(horseNumber) -1][0];
+    }
+
+    public String getHorseOdds(String horseNumber) {
+        return this.raceHorses[Integer.parseInt(horseNumber) -1][1];
     }
 }

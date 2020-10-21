@@ -35,24 +35,22 @@ public class HorseTrackTellerMachineUtils {
     }
 
     public static void noPayout(Paddock paddock, String horseNumber) {
-        System.out.println("No Payout: " + paddock.getRaceHorses()[Integer.parseInt(horseNumber) -1][0]);
+        System.out.println("No Payout: " + paddock.getHorseName(horseNumber));
     }
 
     public static int payout(Atm atm, Paddock paddock, String wager) {
-        int winningHorseNumber = Integer.parseInt(paddock.getCurrentWinningHorseNumber());
-        int payout = calculatePayout(paddock, winningHorseNumber, wager);
-        int[][] billsToDispense;
-        if (atm.isInsufficientFunds(payout) || (billsToDispense = atm.getBillsToDispense(payout)) == null) {
+        int payout = calculatePayout(paddock, wager);
+        if (atm.isInsufficientFunds(payout) || !atm.hasCurrencyToDispense(payout)) {
             System.out.println("Insufficient Funds: " + payout);
             return 0;
         }
-        System.out.println(String.format("Payout: %s,%d", paddock.getRaceHorses()[winningHorseNumber -1][0], payout));
-        atm.debitAtmAndDispenseBills(billsToDispense);
+        System.out.println(String.format("Payout: %s,%d", paddock.getHorseName(paddock.getCurrentWinningHorseNumber()), payout));
+        atm.debitAtmAndDispenseCurrency(payout);
         return payout;
     }
 
-    public static int calculatePayout(Paddock paddock, int winningHorseNumber, String wager) {
-        int raceHorseOdds = Integer.parseInt(paddock.getRaceHorses()[winningHorseNumber -1][1]);
+    public static int calculatePayout(Paddock paddock, String wager) {
+        int raceHorseOdds = Integer.parseInt(paddock.getHorseOdds(paddock.getCurrentWinningHorseNumber()));
         return Integer.parseInt(wager) * raceHorseOdds;
     }
 
@@ -93,9 +91,39 @@ public class HorseTrackTellerMachineUtils {
         return truthValue;
     }
 
+    public static void addRaceHorse(Paddock paddock, String name) {
+        if (name == null || name.isEmpty()) {
+            System.out.println("Empty Horse Name ");
+            return;
+        }
+        paddock.addRaceHorse(name);
+    }
+
     public static void deleteRaceHorse(Paddock paddock, String horseNumber) {
         if (isValidHorseNumber(paddock.getRaceHorsesCount(), horseNumber)) {
             paddock.deleteRaceHorse(Integer.parseInt(horseNumber));
         }
+    }
+
+    public static void addCurrency(Atm atm, String amounts) {
+        String[] cash = amounts.split(" ");
+        if (cash.length < 2 || !isValidInt(cash[0]) || !isValidInt(cash[1])) {
+            System.out.println("Invalid Denomination and Count: " + amounts);
+            return;
+        }
+        int denomination = Integer.parseInt(cash[0]);
+        int denominationCount = Integer.parseInt(cash[1]);
+        atm.addCash(denomination, denominationCount);
+    }
+
+    public static void removeCurrency(Atm atm, String amounts) {
+        String[] cash = amounts.split(" ");
+        if (cash.length < 2 || !isValidInt(cash[0]) || !isValidInt(cash[1])) {
+            System.out.println("Invalid Denomination and Count: " + amounts);
+            return;
+        }
+        int denomination = Integer.parseInt(cash[0]);
+        int denominationCount = Integer.parseInt(cash[1]);
+        atm.removeCash(denomination, denominationCount);
     }
 }
